@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -13,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     getLocation();
                     return true;
                 case R.id.navigation_network_status:
-                    mTextMessage.setText(R.string.title_network_status);
+                    getNetWorkStatus();
                     return true;
             }
             return false;
@@ -71,6 +74,37 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     1, 1, this);
 
 
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        mTextMessage.setText(location.getLongitude() + ":" + location.getLatitude());
+
+
+    }
+
+
+    public void getNetWorkStatus() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo =
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        boolean isWifi = networkInfo.isConnected();
+
+        if (isWifi) showToast("Wifi is connected!!!");
+        else showToast("Wifi is not connected!!!");
+
+        networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        boolean isMobile = networkInfo.isConnected();
+
+        if (isMobile) showToast("3G is connected!!!");
+        else showToast("3G is not connected!!!");
+
+    }
+
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -82,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(Location location) {
 
-        mTextMessage.setText(location.getLongitude() + ":" + location.getLatitude());
 
     }
 
